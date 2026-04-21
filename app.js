@@ -7,8 +7,6 @@ let archivos = [];
 async function init() {
   const indexRes = await fetch(basePath + "index.json");
   archivos = await indexRes.json();
-
-  cargarIndice();
   archivos.sort();
   cargarIndice();
   renderAlphabet();
@@ -133,6 +131,8 @@ const alphabets = {
 };
 
 function renderAlphabet() {
+  console.log("Render alfabeto:", letters);
+  console.log("Archivos:", archivos);
   const idioma = document.getElementById("idioma").value;
   const container = document.getElementById("alfabeto");
 
