@@ -1,79 +1,66 @@
 console.log("APP JS CARGADO");
 
 const basePath = "canciones/";
-
-const indexRes = await fetch(basePath + "index.json");
-const archivos = await indexRes.json();
-
-// Cargar índice
-async function cargarIndice() {
-  const idioma = document.getElementById("idioma").value;
-  const indice = document.getElementById("indice");
-  indice.innerHTML = "";
-
-  for (let file of archivos) {
-    const res = await fetch(basePath + file);
-    const data = await res.json();
-
-    if (data.idiomas[idioma]) {
-      let li = document.createElement("li");
-      li.innerText = data.idiomas[idioma].titulo;const basePath = "canciones/";
-
 let archivos = [];
 
 // INICIALIZAR
 async function init() {
   console.log("INIT EJECUTANDO");
+
   try {
-    const url = "canciones/index.json";
+    const res = await fetch(basePath + "index.json");
 
-    console.log("Cargando:", url);
-
-    const indexRes = await fetch(url);
-
-    if (!indexRes.ok) {
-      throw new Error("No se pudo cargar index.json: " + indexRes.status);
+    if (!res.ok) {
+      throw new Error("No se pudo cargar index.json: " + res.status);
     }
 
-    archivos = await indexRes.json();
+    archivos = await res.json();
 
     console.log("Archivos cargados:", archivos);
 
-    archivos = archivos.sort();
+    archivos.sort();
 
     cargarIndice();
 
   } catch (err) {
     console.error("ERROR INIT:", err);
     document.getElementById("indice").innerHTML =
-      "❌ Error cargando canciones. Revisar consola.";
+      "❌ Error cargando canciones";
   }
 }
 
 init();
 
 
-// Cargar índice
+// CARGAR ÍNDICE
 async function cargarIndice() {
   const idioma = document.getElementById("idioma").value;
   const indice = document.getElementById("indice");
+
   indice.innerHTML = "";
 
   for (let file of archivos) {
-    const res = await fetch(basePath + file);
-    const data = await res.json();
+    try {
+      const res = await fetch(basePath + file);
+      const data = await res.json();
 
-    if (data.idiomas[idioma]) {
-      let li = document.createElement("li");
-      li.innerText = data.idiomas[idioma].titulo;
-      li.onclick = () => mostrarCancion(data);
-      indice.appendChild(li);
+      if (data.idiomas[idioma]) {
+        let li = document.createElement("li");
+
+        li.innerText = data.idiomas[idioma].titulo;
+        li.onclick = () => mostrarCancion(data);
+
+        indice.appendChild(li);
+      }
+
+    } catch (e) {
+      console.error("Error en canción:", file, e);
     }
   }
 }
 
 
-// Mostrar canción
+// MOSTRAR CANCIÓN
 function mostrarCancion(data) {
   const idioma = document.getElementById("idioma").value;
   const cont = document.getElementById("contenido");
@@ -95,9 +82,9 @@ function mostrarCancion(data) {
 }
 
 
-// cambiar idioma dentro de la canción
+// CAMBIAR IDIOMA
 async function cambiarIdioma(lang, id) {
-  const res = await fetch(`canciones/${id}.json`);
+  const res = await fetch(`${basePath}${id}.json`);
   const data = await res.json();
 
   document.getElementById("idioma").value = lang;
@@ -105,7 +92,7 @@ async function cambiarIdioma(lang, id) {
 }
 
 
-// banderas
+// BANDERAS
 function bandera(lang) {
   const flags = {
     es: "🇦🇷",
@@ -115,57 +102,3 @@ function bandera(lang) {
   };
   return flags[lang] || lang;
 }
-      li.onclick = () => mostrarCancion(data);
-      indice.appendChild(li);
-    }
-  }
-}
-
-// Mostrar canción
-function mostrarCancion(data) {
-  const idioma = document.getElementById("idioma").value;
-  const cont = document.getElementById("contenido");
-
-  let html = "";
-
-  // título
-  html += `<h2>${data.idiomas[idioma].titulo}</h2>`;
-
-  // audio
-  html += `<a href="${data.idiomas[idioma].audio}" target="_blank">🎵 Escuchar</a><br><br>`;
-
-  // banderas idiomas disponibles
-  html += `<div>`;
-  for (let lang in data.idiomas) {
-    html += `<button onclick="cambiarIdioma('${lang}', '${data.id}')">${bandera(lang)}</button>`;
-  }
-  html += `</div><br>`;
-
-  // letra
-  html += `<pre>${data.idiomas[idioma].letra}</pre>`;
-
-  cont.innerHTML = html;
-}
-
-// cambiar idioma dentro de la canción
-async function cambiarIdioma(lang, id) {
-  const res = await fetch(`canciones/${id}.json`);
-  const data = await res.json();
-
-  document.getElementById("idioma").value = lang;
-  mostrarCancion(data);
-}
-
-// banderas
-function bandera(lang) {
-  const flags = {
-    es: "🇦🇷",
-    it: "🇮🇹",
-    pt: "🇧🇷",
-    en: "🇬🇧"
-  };
-  return flags[lang] || lang;
-}
-
-// inicial
-cargarIndice();
