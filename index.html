@@ -7,15 +7,18 @@
 </head>
 <body>
 
-<h1>🎶 Cancionero</h1>
+<h1><center>🎶 Cancionero MV 🎶</center></h1>
 
+<input id="buscador" type="text" placeholder="🔎 Buscar canción..." />
 <!-- selector idioma -->
-<select id="idioma">
+<select id="idioma" onchange="cargarIndice(); renderAlphabet();">
   <option value="es" selected>🇦🇷 Español</option>
   <option value="it">🇮🇹 Italiano</option>
   <option value="pt">🇧🇷 Portugués</option>
   <option value="en">🇬🇧 English</option>
 </select>
+<div id="alfabeto" class="alphabet-bar"></div>
+
 
 <h2>Índice</h2>
 <ul id="indice"></ul>

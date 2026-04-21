@@ -9,6 +9,9 @@ async function init() {
   archivos = await indexRes.json();
 
   cargarIndice();
+  archivos.sort();
+  cargarIndice();
+  renderAlphabet();
 }
 
 init();
@@ -59,6 +62,9 @@ function mostrarCancion(data) {
             </button>`;
   }
   html += `</div><br>`;
+
+  // ⭐ FAVORITO
+  html += `<button onclick="toggleFavorito('${data.id}')">⭐ Favorito</button><br><br>`;
 
   // letra
   html += `<div class="song">${renderLyrics(data.idiomas[idioma].letra)}</div>`;
@@ -114,6 +120,74 @@ function bandera(lang) {
   return flags[lang] || lang;
 }
 
+// =========================
+// ALFABETO POR IDIOMAS
+// =========================
+const alphabets = {
+  es: "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ",
+  it: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  pt: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  en: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  fr: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  de: "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ"
+};
+
+function renderAlphabet() {
+  const idioma = document.getElementById("idioma").value;
+  const container = document.getElementById("alfabeto");
+
+  const letters = alphabets[idioma] || alphabets.es;
+
+  container.innerHTML = "";
+
+  letters.split("").forEach(letter => {
+    const btn = document.createElement("button");
+    btn.innerText = letter;
+    btn.classList.add("alpha-btn");
+
+    // verificar si existe canción que empiece con esa letra
+    const exists = archivos.some(file => {
+      return normalizeLetter(file).startsWith(letter);
+    });
+
+    if (exists) {
+      btn.classList.add("active");
+      btn.onclick = () => filtrarPorLetra(letter, idioma);
+    } else {
+      btn.classList.add("disabled");
+    }
+
+    container.appendChild(btn);
+  });
+}
+
+function filtrarPorLetra(letter, idioma) {
+  const indice = document.getElementById("indice");
+  indice.innerHTML = "";
+
+  archivos.forEach(file => {
+    if (file.toUpperCase().startsWith(letter)) {
+      fetch(basePath + file)
+        .then(res => res.json())
+        .then(data => {
+          if (data.idiomas[idioma]) {
+            let li = document.createElement("li");
+            li.innerText = data.idiomas[idioma].titulo;
+            li.onclick = () => mostrarCancion(data);
+            indice.appendChild(li);
+          }
+        });
+    }
+  });
+}
+
+function normalizeLetter(str) {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase();
+}
+
 
 // =========================
 // ACORDES (base lógica)
@@ -141,4 +215,118 @@ function parseChordLine(line) {
     chords: chordLine,
     lyrics: cleanLyrics
   };
+}
+
+
+
+
+
+
+// =========================
+// BUSQUEDA BLANDA DE LA CANCION
+// =========================
+document.getElementById("buscador").addEventListener("input", function () {
+  filtrarCanciones(this.value);
+});
+
+function filtrarCanciones(texto) {
+  const idioma = document.getElementById("idioma").value;
+  const indice = document.getElementById("indice");
+
+  indice.innerHTML = "";
+
+  const q = texto.toLowerCase();
+
+  archivos.forEach(file => {
+    fetch(basePath + file)
+      .then(res => res.json())
+      .then(data => {
+
+        const song = data.idiomas[idioma];
+
+        if (!song) return;
+
+        const match =
+          song.titulo.toLowerCase().includes(q) ||
+          song.letra.toLowerCase().includes(q);
+
+        if (match) {
+          let li = document.createElement("li");
+          li.innerText = song.titulo;
+          li.onclick = () => mostrarCancion(data);
+          indice.appendChild(li);
+        }
+      });
+  });
+}
+
+
+// =========================
+// FAVORITOS
+// =========================
+function toggleFavorito(id) {
+  let favs = JSON.parse(localStorage.getItem("favs") || "[]");
+
+  if (favs.includes(id)) {
+    favs = favs.filter(f => f !== id);
+  } else {
+    favs.push(id);
+  }
+
+  localStorage.setItem("favs", JSON.stringify(favs));
+}
+
+
+// =========================
+// MODO IGLESIA / TELEPRONTER
+// =========================
+.church-mode {
+  font-size: 2em;
+  background: black;
+  color: white;
+  text-align: center;
+}
+
+
+// =========================
+// CONTADOR DE CANCIONES
+// =========================
+function addUso(id) {
+  let data = JSON.parse(localStorage.getItem("uso") || "{}");
+
+  data[id] = (data[id] || 0) + 1;
+
+  localStorage.setItem("uso", JSON.stringify(data));
+}
+
+// =========================
+// SCROLL AUTOMATICO PARA INSTRUMENTOS Y PROYECCION
+// =========================
+let scrollInterval;
+
+function startScroll(speed = 1) {
+  stopScroll();
+
+  scrollInterval = setInterval(() => {
+    window.scrollBy(0, speed);
+  }, 100);
+}
+
+function stopScroll() {
+  clearInterval(scrollInterval);
+}
+
+// =========================
+// TRANSPORTACION DE CANCIONES
+// =========================
+const chordsMap = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+
+function transposeChord(chord, step) {
+  let index = chordsMap.indexOf(chord);
+
+  if (index === -1) return chord;
+
+  let newIndex = (index + step + 12) % 12;
+
+  return chordsMap[newIndex];
 }
