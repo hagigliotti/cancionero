@@ -89,7 +89,9 @@ async function cambiarIdioma(lang, id) {
 // CAMBIAR IDIOMA
 // =========================
 function renderLyrics(text) {
-  const lines = text.split("\n");
+  // 👉 Si viene como array, usar directo
+  // 👉 Si viene como string (compatibilidad), convertir
+  const lines = Array.isArray(text) ? text : text.split("\n");
 
   let html = "";
 
@@ -197,7 +199,7 @@ function normalizeLetter(str) {
 // ACORDES (base lógica)
 // =========================
 function parseChordLine(line) {
-  let regex = /\[([A-G#m7]+)\]/g;
+  let regex = /\[([A-G][#b]?m?(?:\/[A-G][#b]?)?)\]/g;
 
   let chords = [];
   let match;
@@ -247,12 +249,15 @@ function filtrarCanciones(texto) {
       .then(data => {
 
         const song = data.idiomas[idioma];
-
         if (!song) return;
+
+        const letraTexto = Array.isArray(song.letra)
+          ? song.letra.join(" ")
+          : song.letra;
 
         const match =
           song.titulo.toLowerCase().includes(q) ||
-          song.letra.toLowerCase().includes(q);
+          letraTexto.toLowerCase().includes(q);
 
         if (match) {
           let li = document.createElement("li");
