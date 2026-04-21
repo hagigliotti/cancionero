@@ -1,0 +1,14 @@
+.song-line {
+  font-family: monospace;
+  /*line-height: 1.4;*/
+}
+
+.chords {
+  white-space: pre;
+  color: #d9534f;
+}
+
+.lyrics {
+  white-space: pre;
+}
+

@@ -61,7 +61,7 @@ function mostrarCancion(data) {
   html += `</div><br>`;
 
   // letra
-  html += `<pre>${data.idiomas[idioma].letra}</pre>`;
+  html += `<div class="song">${renderLyrics(data.idiomas[idioma].letra)}</div>`;
 
   cont.innerHTML = html;
 }
@@ -78,6 +78,27 @@ async function cambiarIdioma(lang, id) {
   mostrarCancion(data);
 }
 
+// =========================
+// CAMBIAR IDIOMA
+// =========================
+function renderLyrics(text) {
+  const lines = text.split("\n");
+
+  let html = "";
+
+  for (let line of lines) {
+    const parsed = parseChordLine(line);
+
+    html += `
+      <div class="song-line">
+        <div class="chords">${parsed.chords}</div>
+        <div class="lyrics">${parsed.lyrics}</div>
+      </div>
+    `;
+  }
+
+  return html;
+}
 
 // =========================
 // BANDERAS
