@@ -1,5 +1,6 @@
 const basePath = "canciones/";
 let archivos = [];
+let cancionesData = [];
 
 // =========================
 // INICIALIZACIÓN
@@ -8,40 +9,46 @@ async function init() {
   const indexRes = await fetch(basePath + "index.json");
   archivos = await indexRes.json();
 
-  console.log("Archivos cargados:", archivos); // 👈 ACÁ
-  
-  archivos.sort();
+  console.log("Archivos:", archivos);
+
+  // 🔥 cargar todas las canciones una sola vez
+  for (let file of archivos) {
+    const res = await fetch(basePath + file);
+    const data = await res.json();
+    cancionesData.push(data);
+  }
+
+  console.log("Canciones cargadas:", cancionesData);
+
   cargarIndice();
   renderAlphabet();
 }
 
 init();
 
-
 // =========================
 // CARGAR ÍNDICE
 // =========================
-async function cargarIndice() {
+function cargarIndice() {
   const idioma = document.getElementById("idioma").value;
   const indice = document.getElementById("indice");
 
   indice.innerHTML = "";
 
-  for (let file of archivos) {
-    const res = await fetch(basePath + file);
-    const data = await res.json();
-
-    if (data.idiomas[idioma]) {
+  cancionesData
+    .filter(data => data.idiomas[idioma])
+    .sort((a, b) => {
+      const t1 = a.idiomas[idioma].titulo.toLowerCase();
+      const t2 = b.idiomas[idioma].titulo.toLowerCase();
+      return t1.localeCompare(t2);
+    })
+    .forEach(data => {
       let li = document.createElement("li");
       li.innerText = data.idiomas[idioma].titulo;
-
       li.onclick = () => mostrarCancion(data);
-
       indice.appendChild(li);
-    }
-  }
+    });
 }
-
 
 // =========================
 // MOSTRAR CANCIÓN
@@ -50,12 +57,14 @@ function mostrarCancion(data) {
   const idioma = document.getElementById("idioma").value;
   const cont = document.getElementById("contenido");
 
+  addUso(data.id);
+
   let html = "";
 
   html += `<h2>${data.idiomas[idioma].titulo}</h2>`;
   html += `<a href="${data.idiomas[idioma].audio}" target="_blank">🎵 Escuchar</a><br><br>`;
 
-  // botones de idioma
+  // idiomas
   html += `<div>`;
   for (let lang in data.idiomas) {
     html += `<button onclick="cambiarIdioma('${lang}', '${data.id}')">
@@ -64,33 +73,26 @@ function mostrarCancion(data) {
   }
   html += `</div><br>`;
 
-  // ⭐ FAVORITO
   html += `<button onclick="toggleFavorito('${data.id}')">⭐ Favorito</button><br><br>`;
 
-  // letra
   html += `<div class="song">${renderLyrics(data.idiomas[idioma].letra)}</div>`;
 
   cont.innerHTML = html;
 }
 
-
 // =========================
 // CAMBIAR IDIOMA
 // =========================
-async function cambiarIdioma(lang, id) {
-  const res = await fetch(`${basePath}${id}.json`);
-  const data = await res.json();
-
+function cambiarIdioma(lang, id) {
+  const data = cancionesData.find(c => c.id === id);
   document.getElementById("idioma").value = lang;
   mostrarCancion(data);
 }
 
 // =========================
-// CAMBIAR IDIOMA
+// RENDER LETRA
 // =========================
 function renderLyrics(text) {
-  // 👉 Si viene como array, usar directo
-  // 👉 Si viene como string (compatibilidad), convertir
   const lines = Array.isArray(text) ? text : text.split("\n");
 
   let html = "";
@@ -119,12 +121,11 @@ function bandera(lang) {
     pt: "🇧🇷",
     en: "🇬🇧"
   };
-
   return flags[lang] || lang;
 }
 
 // =========================
-// ALFABETO POR IDIOMAS
+// ALFABETO
 // =========================
 const alphabets = {
   es: "*#ABCDEFGHIJKLMNÑOPQRSTUVWXYZ",
@@ -138,11 +139,7 @@ const alphabets = {
 function renderAlphabet() {
   const idioma = document.getElementById("idioma").value;
   const container = document.getElementById("alfabeto");
-
   const letters = alphabets[idioma] || alphabets.es;
-
-  console.log("Render alfabeto:", letters);
-  console.log("Archivos:", archivos);
 
   container.innerHTML = "";
 
@@ -151,7 +148,11 @@ function renderAlphabet() {
     btn.innerText = letter;
     btn.classList.add("alpha-btn");
 
-    const exists = true;
+    const exists = cancionesData.some(data => {
+      if (!data.idiomas[idioma]) return false;
+      const titulo = normalizeLetter(data.idiomas[idioma].titulo);
+      return titulo.startsWith(letter);
+    });
 
     if (exists) {
       btn.classList.add("active");
@@ -168,22 +169,23 @@ function filtrarPorLetra(letter, idioma) {
   const indice = document.getElementById("indice");
   indice.innerHTML = "";
 
-  archivos.forEach(file => {
-    if (file.toUpperCase().startsWith(letter)) {
-      fetch(basePath + file)
-        .then(res => res.json())
-        .then(data => {
-          if (data.idiomas[idioma]) {
-            let li = document.createElement("li");
-            li.innerText = data.idiomas[idioma].titulo;
-            li.onclick = () => mostrarCancion(data);
-            indice.appendChild(li);
-          }
-        });
+  cancionesData.forEach(data => {
+    if (!data.idiomas[idioma]) return;
+
+    const titulo = normalizeLetter(data.idiomas[idioma].titulo);
+
+    if (titulo.startsWith(letter)) {
+      let li = document.createElement("li");
+      li.innerText = data.idiomas[idioma].titulo;
+      li.onclick = () => mostrarCancion(data);
+      indice.appendChild(li);
     }
   });
 }
 
+// =========================
+// NORMALIZAR TEXTO
+// =========================
 function normalizeLetter(str) {
   return str
     .normalize("NFD")
@@ -191,12 +193,11 @@ function normalizeLetter(str) {
     .toUpperCase();
 }
 
-
 // =========================
-// ACORDES (base lógica)
+// ACORDES
 // =========================
 function parseChordLine(line) {
-  let regex = /\[([A-G][#b]?m?(?:\/[A-G][#b]?)?)\]/g;
+  let regex = /\[([A-G][#b]?(?:m|maj7|sus4|dim|aug)?(?:\/[A-G][#b]?)?)\]/g;
 
   let chords = [];
   let match;
@@ -220,13 +221,8 @@ function parseChordLine(line) {
   };
 }
 
-
-
-
-
-
 // =========================
-// BUSQUEDA BLANDA DE LA CANCION
+// BUSCADOR
 // =========================
 document.getElementById("buscador").addEventListener("input", function () {
   filtrarCanciones(this.value);
@@ -240,32 +236,26 @@ function filtrarCanciones(texto) {
 
   const q = texto.toLowerCase();
 
-  archivos.forEach(file => {
-    fetch(basePath + file)
-      .then(res => res.json())
-      .then(data => {
+  cancionesData.forEach(data => {
+    const song = data.idiomas[idioma];
+    if (!song) return;
 
-        const song = data.idiomas[idioma];
-        if (!song) return;
+    const letraTexto = Array.isArray(song.letra)
+      ? song.letra.join(" ")
+      : song.letra;
 
-        const letraTexto = Array.isArray(song.letra)
-          ? song.letra.join(" ")
-          : song.letra;
+    const match =
+      song.titulo.toLowerCase().includes(q) ||
+      letraTexto.toLowerCase().includes(q);
 
-        const match =
-          song.titulo.toLowerCase().includes(q) ||
-          letraTexto.toLowerCase().includes(q);
-
-        if (match) {
-          let li = document.createElement("li");
-          li.innerText = song.titulo;
-          li.onclick = () => mostrarCancion(data);
-          indice.appendChild(li);
-        }
-      });
+    if (match) {
+      let li = document.createElement("li");
+      li.innerText = song.titulo;
+      li.onclick = () => mostrarCancion(data);
+      indice.appendChild(li);
+    }
   });
 }
-
 
 // =========================
 // FAVORITOS
@@ -282,29 +272,22 @@ function toggleFavorito(id) {
   localStorage.setItem("favs", JSON.stringify(favs));
 }
 
-
-
-
-
 // =========================
-// CONTADOR DE CANCIONES
+// CONTADOR USO
 // =========================
 function addUso(id) {
   let data = JSON.parse(localStorage.getItem("uso") || "{}");
-
   data[id] = (data[id] || 0) + 1;
-
   localStorage.setItem("uso", JSON.stringify(data));
 }
 
 // =========================
-// SCROLL AUTOMATICO PARA INSTRUMENTOS Y PROYECCION
+// SCROLL AUTO
 // =========================
 let scrollInterval;
 
 function startScroll(speed = 1) {
   stopScroll();
-
   scrollInterval = setInterval(() => {
     window.scrollBy(0, speed);
   }, 100);
@@ -315,16 +298,12 @@ function stopScroll() {
 }
 
 // =========================
-// TRANSPORTACION DE CANCIONES
+// TRANSPOSICIÓN
 // =========================
 const chordsMap = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 
 function transposeChord(chord, step) {
   let index = chordsMap.indexOf(chord);
-
   if (index === -1) return chord;
-
-  let newIndex = (index + step + 12) % 12;
-
-  return chordsMap[newIndex];
+  return chordsMap[(index + step + 12) % 12];
 }
