@@ -1,0 +1,29 @@
+{
+  "id": "Abba",
+  "idiomas": {
+    "es": {
+      "titulo": "Abba",
+      "audio": "https://youtube.com",
+      "letra": "Abre mis ojos, Jesús quiero verte,\nconmigo tenerte, decir que te amo."
+    },
+    
+    "it": {
+      "titulo": "Abba",
+      "audio": "https://youtube.com",
+      "letra": "Apri i miei occhi, Signore..."
+      
+    },
+    "en": {
+      "titulo": "Abba",
+      "audio": "https://youtube.com",
+      "letra": "Open the eyes of my heart Lord..."
+      
+    },
+    "pt": {
+      "titulo": "Abba",
+      "audio": "https://youtube.com",
+      "letra": "Abra os meus olhos, ó Cristo..."
+      
+    }
+  }
+}
