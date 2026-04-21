@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Cancionero</title>
+</head>
+<body>
+
+<h1>Cancionero</h1>
+
+<input type="text" placeholder="Buscar canción...">
+
+<h2>Canción 1</h2>
+
+<a href="https://youtube.com" target="_blank">🎵 Escuchar</a><br><br>
+
+<button onclick="toggleIdioma()">🌍 Cambiar idioma</button>
+
+<p id="letra">
+Letra en español...
+</p>
+
+<input type="checkbox"> Cantada
+
+<script>
+function toggleIdioma() {
+  let letra = document.getElementById("letra");
+  if (letra.innerHTML === "Letra en español...") {
+    letra.innerHTML = "Lyrics in English...";
+  } else {
+    letra.innerHTML = "Letra en español...";
+  }
+}
+</script>
+
+</body>
+</html>
