@@ -72,3 +72,12 @@ h2 {
   white-space: pre;
 }
 
+// =========================
+// MODO IGLESIA / TELEPRONTER
+// =========================
+.church-mode {
+  font-size: 2em;
+  background: black;
+  color: white;
+  text-align: center;
+}

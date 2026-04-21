@@ -7,6 +7,9 @@ let archivos = [];
 async function init() {
   const indexRes = await fetch(basePath + "index.json");
   archivos = await indexRes.json();
+
+  console.log("Archivos cargados:", archivos); // 👈 ACÁ
+  
   archivos.sort();
   cargarIndice();
   renderAlphabet();
@@ -122,21 +125,22 @@ function bandera(lang) {
 // ALFABETO POR IDIOMAS
 // =========================
 const alphabets = {
-  es: "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ",
-  it: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-  pt: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-  en: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-  fr: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-  de: "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ"
+  es: "*#ABCDEFGHIJKLMNÑOPQRSTUVWXYZ",
+  it: "*#ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  pt: "*#ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  en: "*#ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  fr: "*#ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  de: "*#ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ"
 };
 
 function renderAlphabet() {
-  console.log("Render alfabeto:", letters);
-  console.log("Archivos:", archivos);
   const idioma = document.getElementById("idioma").value;
   const container = document.getElementById("alfabeto");
 
   const letters = alphabets[idioma] || alphabets.es;
+
+  console.log("Render alfabeto:", letters);
+  console.log("Archivos:", archivos);
 
   container.innerHTML = "";
 
@@ -147,7 +151,7 @@ function renderAlphabet() {
 
     // verificar si existe canción que empiece con esa letra
     const exists = archivos.some(file => {
-      return normalizeLetter(file).startsWith(letter);
+      return true; // luego se valida contra data real al cargar
     });
 
     if (exists) {
@@ -277,15 +281,7 @@ function toggleFavorito(id) {
 }
 
 
-// =========================
-// MODO IGLESIA / TELEPRONTER
-// =========================
-.church-mode {
-  font-size: 2em;
-  background: black;
-  color: white;
-  text-align: center;
-}
+
 
 
 // =========================
