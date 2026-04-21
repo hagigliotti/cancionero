@@ -2,8 +2,11 @@
   "id": "Abba",
   "idiomas": {
     "es": {
-      "titulo": "Abba (nunca falla)",
+      "titulo": "Abba (Nunca falla)",
       "audio": "https://open.spotify.com/intl-es/track/0oq2XenhSDaPZUEseNZnK9?si=2b9a15898c754a41",
+      "referencia": "San Juan 1:12",
+      "titulo_original": "Abba (Nunca falla)",
+      "autor": "Marcos Brunet",
       "letra": [
         "[G]Escucho tu [C]corazón,",
         "cada latido está llamando mi [C]nombre.",
@@ -26,30 +29,38 @@
         "y mi respuesta es adorar, [G]mi respuesta es adorar.",
         "",
         "[Am]Abba, [Em] [D/F#]tu amor [G]nunca falla,",
-        "siempre me abrazas. [x4]",
-        "",
-        "Referencia bíblica: Juan 1:12",
-        "Título original: Abba (Nunca falla)",
-        "Autor: Marcos Brunet"
+        "siempre me abrazas. [x4]"
       ]
     },
     
     "it": {
-      "titulo": "Abba",
-      "audio": "https://youtube.com",
-      "letra": "..."
+      "titulo": "Abba (non fallisce mai)",
+      "audio": "https://open.spotify.com/intl-es/track/0oq2XenhSDaPZUEseNZnK9?si=2b9a15898c754a41",
+      "referencia": "Vangelo secondo Giovanni 1:12",
+      "titulo_original": "Abba (Nunca falla)",
+      "autor": "Marcos Brunet",
+      "letra": : [
+      ]
       
     },
     "en": {
-      "titulo": "Abba",
-      "audio": "https://youtube.com",
-      "letra": "..."
+      "titulo": "Abba (never fails)",
+      "audio": "https://open.spotify.com/intl-es/track/0oq2XenhSDaPZUEseNZnK9?si=2b9a15898c754a41",
+      "referencia": "John 1:12",
+      "titulo_original": "Abba (Nunca falla)",
+      "autor": "Marcos Brunet",
+      "letra": : [
+      ]
       
     },
     "pt": {
-      "titulo": "Abba",
-      "audio": "https://youtube.com",
-      "letra": "..."
+      "titulo": "Abba (nunca falha)",
+      "audio": "https://open.spotify.com/intl-es/track/0oq2XenhSDaPZUEseNZnK9?si=2b9a15898c754a41",
+      "referencia": "São João 1:12",
+      "titulo_original": "Abba (Nunca falla)",
+      "autor": "Marcos Brunet",
+      "letra": : [
+      ]
       
     }
   }
