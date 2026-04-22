@@ -1,4 +1,4 @@
-/*FUENTES*/
+/***  TIPOS DE FUENTES: fonts ***/
 @font-face {
   font-family: "Octosale";
   src: url("fonts/octosale-font/Octosale-LV114.otf") format("opentype");
@@ -24,11 +24,11 @@ h1 {
   font-family: "Octosale", "Segoe UI Emoji", sans-serif;
 }
 
-h2 {
+h3 {
   font-family: "DroplineRegular", "Segoe UI Emoji", sans-serif;
 }
 
-/*BOTONES DEL ALFABETO PARA EL MENU*/
+/*** BOTONES DEL ALFABETO PARA EL MENU ***/
 .alphabet-bar {
   display: flex;
   flex-wrap: wrap;
@@ -57,7 +57,7 @@ h2 {
   pointer-events: none;
 }
 
-/*ACORDES*/
+/*** ACORDES ***/
 .song-line {
   font-family: monospace;
   /*line-height: 1.4;*/
@@ -72,9 +72,8 @@ h2 {
   white-space: pre;
 }
 
-// =========================
-// MODO IGLESIA / TELEPRONTER
-// =========================
+
+/*** MODO IGLESIA / TELEPRONTER ***/
 .church-mode {
   font-size: 2em;
   background: black;
