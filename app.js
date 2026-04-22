@@ -50,6 +50,26 @@ function cargarIndice() {
   });
 }
 
+// =========================
+// OCULTAR ÍNDICE
+// =========================
+let indiceVisible = true;
+
+function toggleIndice() {
+  const indice = document.getElementById("indice");
+  const btn = document.getElementById("toggleIndice");
+
+  indiceVisible = !indiceVisible;
+
+  if (indiceVisible) {
+    indice.classList.remove("hidden");
+    btn.innerText = "Ocultar índice";
+  } else {
+    indice.classList.add("hidden");
+    btn.innerText = "Mostrar índice";
+  }
+}
+
 
 // =========================
 // MOSTRAR CANCIÓN

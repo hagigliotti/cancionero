@@ -12,7 +12,10 @@
 
 <!-- busqueda blanda -->
 <input id="buscador" type="text" placeholder="🔎 Buscar canción..." />
-  
+
+<!-- ocultar indice -->
+<button id="toggleIndice" onclick="toggleIndice()" class="btn-toggle">Ocultar índice</button>
+
 <!-- selector idioma -->
 <select id="idioma" onchange="cargarIndice(); renderAlphabet();">
   <option value="es" selected>🇦🇷 Español</option>
@@ -22,10 +25,9 @@
 </select>
 
 <h3>Índice</h3>
-<ul id="indice"></ul>
-
 <!-- menu de letras -->
 <div id="alfabeto" class="alphabet-bar"></div>
+<ul id="indice"></ul>
 
 <hr>
 

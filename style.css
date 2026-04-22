@@ -74,6 +74,31 @@ h3 {
   pointer-events: none;
 }
 
+.alpha-btn.selected {
+  background: #111;
+  color: #fff;
+}
+
+/* BOTON DE OCULTAR ÍNDICE */
+.btn-toggle {
+  background: #111827;
+  color: white;
+  border: none;
+  padding: 3px 12px;
+  border-radius: 1px;
+  margin: 10px 0;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-toggle:hover {
+  background: #374151;
+}
+
+.hidden {
+  display: none;
+}
+
 /*** ACORDES ***/
 .song-line {
   font-family: monospace;
