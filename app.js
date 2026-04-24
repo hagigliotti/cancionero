@@ -156,29 +156,29 @@ function openSong(id) {
 // ===================== SEARCH =====================
 function search(q) {
   const query = q.toLowerCase().trim();
-
   const list = document.getElementById("indice");
 
-  // 👉 SI ESTÁ VACÍO: NO MOSTRAR NADA
   if (query.length === 0) {
     list.innerHTML = "";
     listaVisible = false;
     return;
   }
 
-  // abre lista si estaba cerrada
   if (!listaVisible) {
     openList();
     listaVisible = true;
   }
 
   let result = canciones.filter(c => {
-    const s = c.idiomas?.[idiomaActual];
 
-    return (
-      s?.titulo?.toLowerCase().includes(query) ||
-      (s?.letra || []).join(" ").toLowerCase().includes(query)
-    );
+    // 👉 busca en TODOS los idiomas disponibles
+    return Object.values(c.idiomas || {}).some(s => {
+      const titulo = s?.titulo?.toLowerCase() || "";
+      const letra = (s?.letra || []).join(" ").toLowerCase();
+
+      return titulo.includes(query) || letra.includes(query);
+    });
+
   });
 
   result = sortByTitle(result);
