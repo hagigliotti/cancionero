@@ -3,49 +3,55 @@
   "titulo_original": "",
   "autor": "",
   "compositor": "",
-  "traductor": "",
   "year": "",
   "tonalidad": "",
   "tempo_bpm": "",
   "compas": "",
   "ritmo": "",
+  "referencia_biblica": "",
   "tags": [],
 
   "idiomas": {
     "es": {
       "titulo": "",
       "audio_url": "",
-      "letra": ""
+      "traductor": "",
+      "letra": []
     },
 
     "en": {
       "titulo": "",
       "audio_url": "",
-      "letra": ""
+      "traductor": "",
+      "letra": []
     },
 
     "it": {
       "titulo": "",
       "audio_url": "",
-      "letra": ""
+      "traductor": "",
+      "letra": []
     },
 
     "pt": {
       "titulo": "",
       "audio_url": "",
-      "letra": ""
+      "traductor": "",
+      "letra": []
     },
 
     "fr": {
       "titulo": "",
       "audio_url": "",
-      "letra": ""
+      "traductor": "",
+      "letra": []
     },
     
     "de": {
       "titulo": "",
       "audio_url": "",
-      "letra": ""
+      "traductor": "",
+      "letra": []
     }
   }
 }
