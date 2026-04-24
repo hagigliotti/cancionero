@@ -5,6 +5,16 @@ let idiomaActual = "es";
 let listaVisible = false;
 let letraActiva = null;
 
+// ===================== FLAGS =====================
+const FLAGS = {
+  es: "🇦🇷",
+  en: "🇺🇸",
+  it: "🇮🇹",
+  pt: "🇵🇹",
+  fr: "🇫🇷",
+  de: "🇩🇪"
+};
+
 // ===================== INIT =====================
 async function init() {
   const res = await fetch(DATA_URL);
@@ -21,6 +31,14 @@ async function init() {
   document.getElementById("idioma")
     .addEventListener("change", e => {
       idiomaActual = e.target.value;
+
+      renderAlphabet();
+
+      // validar letra activa
+      if (letraActiva && !document.querySelector(`.alpha[onclick="selectLetter('${letraActiva}')"]`)) {
+        letraActiva = null;
+      }
+
       renderList(letraActiva);
     });
 }
@@ -29,10 +47,31 @@ init();
 
 // ===================== ALFABETO =====================
 function renderAlphabet() {
-  const letters = "*#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const container = document.getElementById("alfabeto");
 
-  container.innerHTML = letters.split("").map(l =>
+  // obtener primeras letras disponibles
+  let letrasDisponibles = new Set();
+
+  canciones.forEach(c => {
+    const titulo = c.idiomas?.[idiomaActual]?.titulo;
+    if (!titulo) return;
+
+    const letra = normalize(titulo.charAt(0));
+
+    if (/^\d/.test(letra)) {
+      letrasDisponibles.add("#");
+    } else {
+      letrasDisponibles.add(letra);
+    }
+  });
+
+  // ordenar
+  let letras = Array.from(letrasDisponibles).sort();
+
+  // opcional: agregar "*" al inicio (todas)
+  letras.unshift("*");
+
+  container.innerHTML = letras.map(l =>
     `<button class="alpha ${l === letraActiva ? "active" : ""}"
       onclick="selectLetter('${l}')">${l}</button>`
   ).join("");
@@ -43,8 +82,6 @@ function selectLetter(l) {
     closeList();
     letraActiva = null;
     renderAlphabet();
-
-    // 👉 limpiar pantalla
     document.getElementById("contenido").innerHTML = "";
     return;
   }
@@ -56,7 +93,6 @@ function selectLetter(l) {
   renderAlphabet();
   renderList(l);
 
-  // 👉 limpiar canción activa al cambiar letra
   document.getElementById("contenido").innerHTML = "";
 }
 
@@ -121,6 +157,37 @@ function closeList() {
   listaVisible = false;
 }
 
+// ===================== FLAGS RENDER =====================
+function renderLanguageFlags(song) {
+  const idiomas = song.idiomas || {};
+
+  return Object.keys(idiomas)
+    .filter(lang => idiomas[lang]?.titulo)
+    .map(lang => `
+      <span class="flag ${lang === idiomaActual ? "active" : ""}"
+            onclick="changeLanguage('${lang}', '${song.id}')">
+        ${FLAGS[lang] || "🌐"}
+      </span>
+    `).join("");
+}
+
+function changeLanguage(lang, songId) {
+  idiomaActual = lang;
+
+  // sincronizar selector
+  document.getElementById("idioma").value = lang;
+
+  // 👉 actualizar alfabeto según idioma
+  renderAlphabet();
+
+  // 👉 validar letra activa
+  if (letraActiva && !document.querySelector(`.alpha[onclick="selectLetter('${letraActiva}')"]`)) {
+    letraActiva = null;
+  }
+
+  openSong(songId);
+}
+
 // ===================== OPEN SONG =====================
 function openSong(id) {
   const song = canciones.find(c => c.id === id);
@@ -134,21 +201,62 @@ function openSong(id) {
     return;
   }
 
-  const meta = `
-    <div class="meta">
-      <div><b>Original:</b> ${song.titulo_original || ""}</div>
-      <div><b>Autor:</b> ${song.autor || ""}</div>
-      <div><b>Referencia bíblica:</b> ${song.referencia_biblica || ""}</div>
-      <div><b>Tonalidad:</b> ${song.tonalidad || ""} <b>| BPM:</b> ${song.tempo_bpm || ""}</div>
-      <div><b>Tags:</b> ${(song.tags || []).join(", ")}</div>
+const audioHtml = renderAudioLink(song, s);
+
+const meta = `
+  <div class="meta">
+    <div><b>Original:</b> ${song.titulo_original || ""}</div>
+    <div><b>Autor:</b> ${song.autor || ""}</div>
+    <div><b>Compositor:</b> ${song.compositor || ""}</div>
+    <div><b>Año:</b> ${song.year || ""}</div>
+    <div><b>Referencia bíblica:</b> ${song.referencia_biblica || song.referencia || ""}</div>
+    <div><b>Tonalidad:</b> ${song.tonalidad || ""} <b>| BPM:</b> ${song.tempo_bpm || ""}</div>
+    <div><b>Compás:</b> ${song.compas || ""} <b>| Ritmo:</b> ${song.ritmo || ""}</div>
+    <div><b>Tags:</b> ${(song.tags || []).join(", ")}</div>
+
+    ${audioHtml}
+
+    <div class="flags">
+      <b>Idioma/s:</b> ${renderLanguageFlags(song)}
     </div>
-  `;
+  </div>
+`;
 
   document.getElementById("contenido").innerHTML = `
     <h2>${s.titulo || song.titulo_original}</h2>
     ${meta}
     <div class="lyrics">
       ${renderLyrics(s.letra)}
+    </div>
+  `;
+}
+
+// ===================== icono apple music, spotify o youtube =====================
+function renderAudioLink(song, idiomaData) {
+  const url = idiomaData?.audio_url || song.audio || "";
+
+  if (!url) return "";
+
+  let icon = "🎵";
+  let label = "Escuchar";
+
+  if (url.includes("spotify")) {
+    icon = "🟢";
+    label = "Spotify";
+  } else if (url.includes("youtube") || url.includes("youtu.be")) {
+    icon = "🔴";
+    label = "YouTube";
+  } else if (url.includes("apple")) {
+    icon = "🍎";
+    label = "Apple Music";
+  }
+
+  return `
+    <div class="audio">
+      <b>Audio:</b>
+      <a href="${url}" target="_blank">
+        ${icon} ${label}
+      </a>
     </div>
   `;
 }
@@ -170,15 +278,12 @@ function search(q) {
   }
 
   let result = canciones.filter(c => {
-
-    // 👉 busca en TODOS los idiomas disponibles
     return Object.values(c.idiomas || {}).some(s => {
       const titulo = s?.titulo?.toLowerCase() || "";
       const letra = (s?.letra || []).join(" ").toLowerCase();
 
       return titulo.includes(query) || letra.includes(query);
     });
-
   });
 
   result = sortByTitle(result);
@@ -189,22 +294,18 @@ function search(q) {
     </li>`
   ).join("");
 }
+
 // ===================== THEME =====================
 function toggleTheme() {
   const body = document.body;
   const btn = document.getElementById("themeToggle");
 
   if (body.classList.contains("light-mode")) {
-    body.classList.remove("light-mode");
-    body.classList.add("dark-mode");
-
+    body.classList.replace("light-mode", "dark-mode");
     btn.innerText = "🌙";
     localStorage.setItem("theme", "dark");
-
   } else {
-    body.classList.remove("dark-mode");
-    body.classList.add("light-mode");
-
+    body.classList.replace("dark-mode", "light-mode");
     btn.innerText = "☀️";
     localStorage.setItem("theme", "light");
   }
@@ -224,15 +325,13 @@ function loadTheme() {
   }
 }
 
-// ===================== LETRA CON ACORDES =====================
+// ===================== LETRA =====================
 function renderLyrics(text) {
   if (!text) return "";
 
   const lines = Array.isArray(text) ? text : text.split("\n");
 
   return lines.map(line => {
-
-    // 👉 salto de línea explícito
     if (!line || line === "br") {
       return `<div class="song-break"></div>`;
     }
@@ -254,26 +353,24 @@ function renderLyrics(text) {
   }).join("");
 }
 
-// ===================== PARSEO DE ACORDES =====================
+// ===================== ACORDES =====================
 function parseChordLine(line) {
   const regex = /\[([A-G#b♯♭mM0-9\/]+)\]/g;
 
   let chords = [];
   let clean = "";
   let lastIndex = 0;
-
   let match;
 
   while ((match = regex.exec(line)) !== null) {
     const chord = match[1];
     const index = match.index;
 
-    // texto antes del acorde
     clean += line.substring(lastIndex, index);
 
     chords.push({
       chord,
-      pos: clean.length // posición real en texto limpio
+      pos: clean.length
     });
 
     lastIndex = index + match[0].length;
@@ -284,32 +381,26 @@ function parseChordLine(line) {
   return { chords, lyrics: clean };
 }
 
-// ===================== TAMAÑO LETRA =====================
+// ===================== FONT SIZE =====================
 let fontSizes = ["font-small", "font-medium", "font-large"];
-let fontIndex = 1; // medio por defecto
+let fontIndex = 1;
 
 function toggleFontSize() {
-    document.body.classList.remove(...fontSizes);
-
-    fontIndex = (fontIndex + 1) % fontSizes.length;
-
-    document.body.classList.add(fontSizes[fontIndex]);
+  document.body.classList.remove(...fontSizes);
+  fontIndex = (fontIndex + 1) % fontSizes.length;
+  document.body.classList.add(fontSizes[fontIndex]);
 }
 
-// ===================== MODO PROYECTOR =====================
-
+// ===================== PROYECTOR =====================
 function toggleProyector() {
   document.body.classList.toggle("proyector");
 }
 
-
 function toggleProjectorMode() {
-    document.body.classList.toggle("projector");
+  document.body.classList.toggle("projector");
 
-    // opcional: forzar letra grande en proyector
-    if (document.body.classList.contains("projector")) {
-        document.body.classList.remove(...fontSizes);
-        document.body.classList.add("font-large");
-    }
+  if (document.body.classList.contains("projector")) {
+    document.body.classList.remove(...fontSizes);
+    document.body.classList.add("font-large");
+  }
 }
-

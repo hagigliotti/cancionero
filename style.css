@@ -82,13 +82,25 @@ h1 {
   display: none;
 }
 
-#toggleLista {
+#toggleLista,
+#fontSizeBtn,
+#projectorBtn {
   margin: 10px;
   padding: 8px 12px;
   border: none;
-  border-radius: 8px;
-  background: #3b82f6;
+  border-radius: 100px;
+  background: #b6b6b657;
   color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#toggleLista:hover,
+#fontSizeBtn:hover,
+#projectorBtn:hover {
+  opacity: 0.85;
+  transform: scale(1.05);
 }
 
 /*visualizar lista de canciones*/
@@ -109,15 +121,6 @@ h1 {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-#toggleLista {
-  margin: 10px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 8px;
-  background: #3b82f6;
-  color: white;
 }
 
 /* CLARO / OSCURO */
@@ -184,7 +187,7 @@ h1 {
   flex: 1;
   padding: 10px;
   border-radius: 10px;
-  border: none;
+  border: 1px solid #000;
 }
 
 /* botones compactos */
@@ -203,11 +206,6 @@ h1 {
 @media (max-width: 480px) {
   #idioma {
     width: 60px;
-  }
-
-  #toggleLista {
-    font-size: 14px;
-    padding: 6px;
   }
 }
 
@@ -286,4 +284,64 @@ body.projector .top-bar,
 body.projector #alfabeto,
 body.projector #indice {
     display: none;
+}
+
+/*Banderitas para cambiar de idioma en la cancion*/
+.flags {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.3em;
+  font-weight: 500;
+}
+
+.flags b {
+  margin-right: 5px;
+  font-size: 0.8em; /* apenas más chico */
+}
+
+.flag {
+  font-size: 20px; /* antes 22px */
+  margin-right: 8px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: 0.2s;
+}
+
+.flag:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.flag.active {
+  opacity: 1;
+  border-bottom: 2px solid #38bdf8;
+}
+
+/* ===================== icono apple music, spotify o youtube =====================*/
+.audio a {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Spotify */
+.audio a.spotify {
+  color: #1DB954; /* verde Spotify estándar */
+}
+
+/* Apple Music */
+.audio a.apple {
+  color: #ff2d55; /* rosa/rojo Apple Music */
+}
+
+/* YouTube */
+.audio a.youtube {
+  color: #ff0000; /* rojo YouTube */
+}
+
+/* evitar cambios del navegador */
+.audio a:visited,
+.audio a:active {
+  color: inherit;
 }
