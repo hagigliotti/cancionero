@@ -4,7 +4,7 @@ let canciones = [];
 let idiomaActual = "es";
 let listaVisible = false;
 let letraActiva = null;
-
+let hag = true;
 // ===================== FLAGS =====================
 const FLAGS = {
   es: "🇦🇷",
@@ -409,4 +409,3 @@ function isMobileOrTablet() {
   return /Mobi|Android|iPhone|iPad|iPod|Tablet/i.test(navigator.userAgent);
 }
 
-}
