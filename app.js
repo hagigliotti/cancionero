@@ -33,6 +33,12 @@ async function init() {
 
   renderAlphabet();
   loadTheme();
+
+  // 👇 ACÁ (justo después de loadTheme)
+  if (localStorage.getItem("projector") === "on") {
+    document.body.classList.add("projector");
+  }
+
   handleMenuVisibility();
 
   document.getElementById("indice").classList.add("hidden");
@@ -42,7 +48,6 @@ async function init() {
 
   document.getElementById("idioma")
   .addEventListener("change", e => {
-    // 🔒 si es himnario → no permitir cambio
     if (libroActual === "himnario") return;
 
     idiomaActual = e.target.value;
@@ -64,12 +69,10 @@ async function init() {
     const idiomaSelect = document.getElementById("idioma");
 
     if (libroActual === "himnario") {
-      // 🔒 forzar español
       idiomaActual = "es";
       idiomaSelect.value = "es";
       idiomaSelect.disabled = true;
     } else {
-      // 🔓 habilitar idiomas
       idiomaSelect.disabled = false;
     }
 
@@ -474,6 +477,18 @@ function loadTheme() {
   } else {
     body.classList.add("dark-mode");
     btn.innerText = "🌙";
+  }
+}
+// ===================== PROYECTOR =====================
+function toggleProjectorMode() {
+  const body = document.body;
+
+  if (body.classList.contains("projector")) {
+    body.classList.remove("projector");
+    localStorage.setItem("projector", "off");
+  } else {
+    body.classList.add("projector");
+    localStorage.setItem("projector", "on");
   }
 }
 
