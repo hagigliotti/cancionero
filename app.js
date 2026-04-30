@@ -575,10 +575,19 @@ function renderAlphabet() {
         l === "#" ? "#️⃣" :
         l;
 
-      return `<button class="alpha ${l === letraActiva ? "active" : ""}"
-        onclick="selectLetter('${l}')">${label}</button>`;
+      const title =
+        l === "*" ? "Lista de todas las canciones" :
+        l === "#" ? "Orden numérico" :
+        `Letra ${l}`;
+
+      return `<button 
+        class="alpha ${l === letraActiva ? "active" : ""}"
+        onclick="selectLetter('${l}')"
+        title="${title}">
+        ${label}
+      </button>`;
     }).join("") +
-    `<button class="clear-btn" onclick="clearAll()">Limpiar</button>`;
+    `<button class="clear-btn" onclick="clearAll()" title="Limpiar">🧹</button>`;
 }
 
 function selectLetter(l) {
