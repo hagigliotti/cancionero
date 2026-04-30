@@ -194,17 +194,7 @@ a.menu-item {
 
 /* *** Tamano de letra: A+ A A- */
 /* Tamano: A- */
-body.font-small #contenido {
-    font-size: 14px;
-}
-/* Tamano: A */
-body.font-medium #contenido {
-    font-size: 20px;
-}
-/* Tamano: A+ */
-body.font-large #contenido {
-    font-size: 26px;
-}
+
 
 /* *** Proyector */
 /* *** Tema: Claro / Oscuro */
@@ -570,6 +560,8 @@ body.projector #alfabeto {
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  background: white;
+  color: #1e293b;
 }
 
 /* BOTÓN CERRAR */
@@ -890,4 +882,42 @@ body.projector .song-break {
 
 body.projector #alfabeto {
   justify-content: center;
+}
+
+/* BOTON LIMPIAR */
+.clear-btn {
+  min-width: 80px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #000; /* none */
+  cursor: pointer;
+
+  background: #38bdf8;    /* celeste fijo */
+  color: white;
+  font-weight: bold;
+
+  margin-left: 8px;
+  transition: 0.2s;
+}
+
+.clear-btn:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* asegurar visibilidad en todos los modos */
+.light-mode .clear-btn,
+.dark-mode .clear-btn,
+body.projector .clear-btn {
+  background: #38bdf8;
+  color: #1e293b;
+}
+
+
+
+.alpha {
+  min-width: 36px;
+  height: 36px;   /* 👈 AQUÍ está el alto */
+  border-radius: 8px;
+  border: 1px solid #000;
 }

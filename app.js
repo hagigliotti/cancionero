@@ -59,7 +59,7 @@ async function init() {
       renderList(letraActiva);
     });
 
-  document.getElementById("libro")
+  document.getElementById("menuLibro")
   .addEventListener("change", e => {
     libroActual = e.target.value;
 
@@ -80,7 +80,8 @@ async function init() {
     }
 
     renderAlphabet();
-  });
+    applyFontSize();
+});
 
   document.getElementById("menuIdioma").addEventListener("change", e => {
     idiomaActual = e.target.value;
@@ -120,6 +121,34 @@ function getNumeroHimno(c) {
 }
 
 
+// ===================== BOTON LIMPIAR ======================
+function clearAll() {
+  // 🔎 limpiar buscador
+  const buscador = document.getElementById("buscador");
+  if (buscador) buscador.value = "";
+
+  // 📄 limpiar contenido
+  document.getElementById("contenido").innerHTML = "";
+
+  // 📂 cerrar lista
+  closeList();
+  listaVisible = false;
+
+  // 🔤 reset letra activa
+  letraActiva = null;
+
+  // 🔁 refrescar alfabeto
+  renderAlphabet();
+
+  // 🔁 limpiar índice visual
+  document.getElementById("indice").innerHTML = "";
+
+  // 📌 opcional: cerrar dropdown menu si está abierto
+  document.getElementById("dropdownMenu")?.classList.remove("active");
+
+  // 🔝 volver arriba
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
 
 
@@ -198,24 +227,6 @@ function abrirInfoDesdeMenu() {
   info();
 }
 
-let fontSizeLevel = 0;
-
-function cambiarFuente(step) {
-  fontSizeLevel += step;
-
-  document.body.classList.remove("font-small", "font-large", "no-chords");
-
-  if (fontSizeLevel > 0) {
-    document.body.classList.add("font-large", "no-chords");
-  } else if (fontSizeLevel < 0) {
-    document.body.classList.add("font-small", "no-chords");
-  }
-}
-
-function resetFuente() {
-  fontSizeLevel = 0;
-  document.body.classList.remove("font-small", "font-large", "no-chords");
-}
 
 // ===== BOTON ACERCA DE.... =================================================================
 function info() {
@@ -274,6 +285,31 @@ const FLAGS = {
   fr: "🇫🇷",
   de: "🇩🇪"
 };
+
+// ===== CAMBIO DE TAMANO DE FUENTE (A+ A A-) ====================================================================
+let fontSizeLevel = 0;
+
+function applyFontSize() {
+  const scale = 1 + (fontSizeLevel * 0.08);
+
+  document.body.style.transform = `scale(${scale})`;
+  document.body.style.transformOrigin = "top left";
+  document.body.style.width = `${100 / scale}%`;
+}
+
+function cambiarFuente(step) {
+  fontSizeLevel += step;
+
+  if (fontSizeLevel > 5) fontSizeLevel = 5;
+  if (fontSizeLevel < -3) fontSizeLevel = -3;
+
+  applyFontSize();
+}
+
+function resetFuente() {
+  fontSizeLevel = 0;
+  applyFontSize();
+}
 
 // ===== PROYECTOR ============================================================================
 function toggleProjectorMode() {
@@ -400,7 +436,7 @@ function search(q) {
     }
 
     return `
-      <li onclick="openSong('${c.id}')">
+      <li onclick="selectSong('${c.id}')">
         <div style="display:flex; justify-content:space-between; gap:10px;">
           <span>${baseTitle}</span>
           <span style="opacity:0.7; font-size:14px;">${flags}</span>
@@ -410,6 +446,12 @@ function search(q) {
   }).join("");
 }
 
+function selectSong(id) {
+  closeList();        // 👈 cierra lista inmediatamente
+  listaVisible = false;
+
+  openSong(id);       // luego abre canción
+}
 
 // ===== BOTON IDIOMA INTELIGENTE =================================================================
 const langBtn = document.getElementById("langBtn");
@@ -497,10 +539,12 @@ function renderAlphabet() {
   // siempre incluir *
   letras.unshift("*");
 
-  container.innerHTML = letras.map(l =>
-    `<button class="alpha ${l === letraActiva ? "active" : ""}"
-      onclick="selectLetter('${l}')">${l}</button>`
-  ).join("");
+  container.innerHTML =
+    letras.map(l =>
+      `<button class="alpha ${l === letraActiva ? "active" : ""}"
+        onclick="selectLetter('${l}')">${l}</button>`
+    ).join("") +
+    `<button class="clear-btn" onclick="clearAll()">Limpiar</button>`;
 }
 
 function selectLetter(l) {
@@ -528,16 +572,19 @@ function selectLetter(l) {
 function openList() {
   const list = document.getElementById("indice");
 
-  list.style.display = "block"; // 👈 CLAVE
   list.classList.remove("hidden");
   list.classList.add("fade-in");
 
   document.getElementById("toggleLista").innerText = "📂";
+
+  listaVisible = true;
 }
 
 function closeList() {
   const list = document.getElementById("indice");
+
   list.classList.add("hidden");
+  list.classList.remove("fade-in");
 
   document.getElementById("toggleLista").innerText = "📁";
 
@@ -658,7 +705,10 @@ function openSong(id) {
   const song = [...canciones, ...himnos].find(c => c.id === id);
   const s = song?.idiomas?.[idiomaActual];
 
+  // ✅ cerrar lista y resetear estado visual
   closeList();
+  listaVisible = false;
+  letraActiva = null; // 🔥 importante: evita inconsistencias con el alfabeto
 
   if (!song || !s) {
     document.getElementById("contenido").innerHTML =
@@ -715,6 +765,9 @@ function openSong(id) {
       ${renderLyrics(s.letra)}
     </div>
   `;
+
+  // ✅ UX MEJORADO: subir arriba automáticamente
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 // ===================== AUDIO =====================
