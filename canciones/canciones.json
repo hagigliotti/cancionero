@@ -258,5 +258,51 @@
       ]
     }
   }
+},
+{
+  "id": "blanqueado",
+  "titulo": "Blanqueado por tu amor",
+  "autor": "Ariel Quispe",
+  "referencia_biblica": "Salmos 51:10",
+  "idiomas": {
+    "es": {
+      "secciones": [
+        {
+          "tipo": "verso",
+          "lineas": [
+            { "acordes": ["D"], "letra": "Te presento, Señor, mi débil corazón." },
+            { "acordes": ["G"], "letra": "Tómalo en tus manos, Dios, límpialo con tu amor." },
+            { "acordes": ["D7"], "letra": "He caído tantas veces cosechando dolor," },
+            { "acordes": ["Bm", "G", "A"], "letra": "y a pesar de todo soy blanqueado por tu amor." }
+          ]
+        },
+        {
+          "tipo": "coro",
+          "lineas": [
+            { "acordes": ["Bm"], "letra": "Larala, larala, laralara la." },
+            { "acordes": ["Bm"], "letra": "Larala, larala, laralara la." }
+          ]
+        },
+        {
+          "tipo": "verso",
+          "lineas": [
+            { "acordes": ["D7"], "letra": "Sé que soy pecador y te pido perdón." },
+            { "acordes": ["G"], "letra": "Necesito paz completa, paz en mi corazón." },
+            { "acordes": ["D7"], "letra": "Sé que soy tan vulnerable en volver a mi error," },
+            { "acordes": ["Bm", "G", "A"], "letra": "y a pesar de todo soy blanqueado por tu amor." }
+          ]
+        },
+        {
+          "tipo": "coro"
+        },
+        {
+          "tipo": "puente",
+          "lineas": [
+            { "acordes": ["G", "A", "D"], "letra": "Blanqueado por tu amor, blanqueado por tu amor." }
+          ]
+        }
+      ]
+    }
+  }
 }
 ]
